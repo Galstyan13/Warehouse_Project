@@ -1,71 +1,114 @@
+from tkinter import *
+from tkinter import ttk
+from tkinter import messagebox
+import tkinter
 import random
+import pymysql
+import csv
+from datetime import datetime
+import numpy as np
 
-def main():
-    templates = [
-        """It was about {Number} {Measure of time} ago when I arrived at the hospital in a {Mode of Transportation}. The hospital is a/an {Adjective} place, there are a lot of {Adjective2} {Noun} here. There are nurses here who have {Color} {Part of the Body}. If someone wants to come into my room I told them that they have to {Verb} first. I’ve decorated my room with {Number2} {Noun2}. Today I talked to a doctor and they were wearing a {Noun3} on their {Part of the Body 2}. I heard that all doctors {Verb} {Noun4} every day for breakfast. The most {Adjective3} thing about being in the hospital is the {Silly Word} {Noun}!""",
-        
-        """This weekend I am going camping with {Proper Noun (Person’s Name)}. I packed my lantern, sleeping bag, and {Noun}. I am so {Adjective (Feeling)} to {Verb} in a tent. I am {Adjective (Feeling) 2} we might see a(n) {Animal}, I hear they’re kind of dangerous. While we’re camping, we are going to hike, fish, and {Verb2}. I have heard that the {Color} lake is great for {Verb (ending in ing)}. Then we will {Adverb (ending in ly)} hike through the forest for {Number} {Measure of Time}. If I see a {Color} {Animal} while hiking, I am going to bring it home as a pet! At night we will tell {Number} {Silly Word} stories and roast {Noun2} around the campfire!!""",
-        
-        """Dear {Proper Noun (Person’s Name)}, I am writing to you from a {Adjective} castle in an enchanted forest. I found myself here one day after going for a ride on a {Color} {Animal} in {Place}. There are {Adjective2} {Magical Creature (Plural)} and {Adjective3} {Magical Creature (Plural)2} here! In the {Room in a House} there is a pool full of {Noun}. I fall asleep each night on a {Noun2} of {Noun (Plural)3} and dream of {Adjective4} {Noun (Plural)4}. It feels as though I have lived here for {Number} {Measure of time}. I hope one day you can visit, although the only way to get here now is {Verb (ending in ing)} on a {Adjective5} {Noun5}!!"""
-    ]
+window = tkinter.Tk()
+window.title("stock managment system")
+window.geometry("720x640")
+my_tree = ttk.Treeview(window, show='headings',height=20)
+style=ttk.Style()
 
-    print("Choose a template to fill in:")
-    print("1: Template 1")
-    print("2: Template 2")
-    print("3: Template 3")
+placeholderArray = ['','','','','']
 
-    choice = input("Enter the number of the template you want to use: ")
-    if choice == '1':
-        template = templates[0]
-    elif choice == '2':
-        template = templates[1]
-    elif choice == '3':
-        template = templates[2]
-    else:
-        print("Invalid choice. Exiting.")
-        return
+for i in range(0,5):
+    placeholderArray[i] = tkinter.StringVar()
 
-    prompts = {
-        "{Number}": "Enter a number: ",
-        "{Measure of time}": "Enter a measure of time (e.g., days, months): ",
-        "{Mode of Transportation}": "Enter a mode of transportation: ",
-        "{Adjective}": "Enter an adjective: ",
-        "{Adjective2}": "Enter another adjective: ",
-        "{Noun}": "Enter a noun: ",
-        "{Color}": "Enter a color: ",
-        "{Part of the Body}": "Enter a part of the body: ",
-        "{Verb}": "Enter a verb: ",
-        "{Number2}": "Enter another number: ",
-        "{Noun2}": "Enter another noun: ",
-        "{Noun3}": "Enter a noun: ",
-        "{Part of the Body 2}": "Enter another part of the body: ",
-        "{Noun4}": "Enter another noun: ",
-        "{Adjective3}": "Enter one more adjective: ",
-        "{Silly Word}": "Enter a silly word: ",
-        "{Proper Noun (Person’s Name)}": "Enter a proper noun (person's name): ",
-        "{Adjective (Feeling)}": "Enter an adjective describing a feeling: ",
-        "{Adjective (Feeling) 2}": "Enter another adjective describing a feeling: ",
-        "{Animal}": "Enter an animal: ",
-        "{Verb2}": "Enter another verb: ",
-        "{Verb (ending in ing)}": "Enter a verb ending in -ing: ",
-        "{Adverb (ending in ly)}": "Enter an adverb ending in -ly: ",
-        "{Place}": "Enter a place: ",
-        "{Room in a House}": "Enter a room in a house: ",
-        "{Magical Creature (Plural)}": "Enter a plural magical creature: ",
-        "{Magical Creature (Plural)2}": "Enter another plural magical creature: ",
-        "{Noun2}": "Enter another noun: ",
-        "{Noun (Plural)3}": "Enter a plural noun: ",
-        "{Adjective4}": "Enter another adjective: ",
-        "{Noun (Plural)4}": "Enter a plural noun: ",
-        "{Adjective5}": "Enter an adjective: ",
-        "{Noun5}": "Enter a noun: "
-    }
-    for placeholder, prompt in prompts.items():
-        replacement = input(prompt)
-        template = template.replace(placeholder, replacement, 1)  
+dummydata = [
+    ['12132','weff','fergw','12132','weff','fergw'],
+['12132','weff','fergw','12132','weff','fergw'],
+['12132','weff','fergw','12132','weff','fergw'],
+['12132','weff','fergw','12132','weff','fergw']
+]
 
-    print("\nHere's your story:")
-    print(template)
+def refreshTable():
+    for data in my_tree.get_children():
+        my_tree.delete(data)
+    for array in dummydata:
+        my_tree.insert(parent='',index='end',iid=array, text="",values=(array),tag="orow")
+    my_tree.tag_configure('orow',background="#EEEEEE")
+    my_tree.pack()
 
-if __name__ == "__main__":
-    main()
+frame =tkinter.Frame(window, bg = "#02577A")
+frame.pack()
+
+btnColor = "#196E78"
+
+manageFrame = tkinter.LabelFrame(frame,text="Manage",borderwidth=5)
+manageFrame.grid(row=0, column=0,sticky="w",padx=[10,200],pady=20, ipadx=[6])
+
+saveBtn = Button(manageFrame,text="save",width=10, borderwidth=3,bg=btnColor,fg='white')
+updateBtn = Button(manageFrame,text="update",width=10, borderwidth=3,bg=btnColor,fg='white')
+deleteBtn = Button(manageFrame,text="delete",width=10, borderwidth=3,bg=btnColor,fg='white')
+selectBtn = Button(manageFrame,text="select",width=10, borderwidth=3,bg=btnColor,fg='white')
+findBtn = Button(manageFrame,text="find",width=10, borderwidth=3,bg=btnColor,fg='white')
+clearBtn = Button(manageFrame,text="clear",width=10, borderwidth=3,bg=btnColor,fg='white')
+exportBtn = Button(manageFrame,text="export excel",width=15, borderwidth=3,bg=btnColor,fg='white')
+
+saveBtn.grid(row=0,column=0,padx=5,pady=5)
+updateBtn.grid(row=0,column=1,padx=5,pady=5)
+deleteBtn.grid(row=0,column=2,padx=5,pady=5)
+selectBtn.grid(row=0,column=3,padx=5,pady=5)
+findBtn.grid(row=0,column=4,padx=5,pady=5)
+clearBtn.grid(row=0,column=5,padx=5,pady=5)
+exportBtn.grid(row=0,column=6,padx=5,pady=5)
+
+entriesFrame = tkinter.LabelFrame(frame,text="form",borderwidth=5)
+entriesFrame.grid(row=0, column=0,sticky="w",padx=[10,200],pady=[0,20], ipadx=[6])
+
+itemIdlabel= Label(entriesFrame,text= "ITEM ID", anchor="e", width=10)
+namelabel= Label(entriesFrame,text= "name", anchor="e", width=10)
+pricelabel= Label(entriesFrame,text= "price", anchor="e", width=10)
+qntlabel= Label(entriesFrame,text= "qnt", anchor="e", width=10)
+categorylabel= Label(entriesFrame,text= "category", anchor="e", width=10)
+
+itemIdlabel.grid(row=0,column=0,padx=10)
+namelabel.grid(row=1,column=0,padx=10)
+pricelabel.grid(row=2,column=0,padx=10)
+qntlabel.grid(row=3,column=0,padx=10)
+categorylabel.grid(row=4,column=0,padx=10)
+
+categoryArray = ['networking tools','computer spare parts', 'repair tools','useful gadgets']
+
+itemIdEntry= Entry(entriesFrame, width=50, textvariable=placeholderArray[0])
+nameEntry= Entry(entriesFrame,width=50, textvariable=placeholderArray[1])
+priceEntry= Entry(entriesFrame,width=50, textvariable=placeholderArray[2])
+qntEntry= Entry(entriesFrame,width=50, textvariable=placeholderArray[3])
+categoryCombo= ttk.Combobox(entriesFrame,width=47, textvariable=placeholderArray[4],values=categoryArray)
+
+itemIdEntry.grid(row=0,column=0,padx=5, pady= 5)
+nameEntry.grid(row=1,column=0,padx=5, pady = 5)
+priceEntry.grid(row=2,column=0,padx=5, pady = 5)
+qntEntry.grid(row=3,column=0,padx=5, pady= 5)
+categoryCombo.grid(row=4,column=0,padx=5, pady =5)
+
+generateIdBtn= Button(entriesFrame,text="genereate id",borderwidth=3,bg=btnColor,fg='white')
+generateIdBtn.grid(row=0,column=3,padx=5, pady =5)
+
+style.configure(window)
+my_tree['columns']=("Item Id","Name","Price","Quantity","Category","Date")
+my_tree.column("#0",width=0,stretch=NO)
+my_tree.column("Item Id", anchor=W,width=70)
+my_tree.column("Name", anchor=W,width=100)
+my_tree.column("Price", anchor=W,width=100)
+my_tree.column("Quantity", anchor=W,width=100)
+my_tree.column("Category", anchor=W,width=100)
+my_tree.column("Date", anchor=W,width=100)
+my_tree.heading("Item Id",text="Irem Id",anchor=W)
+my_tree.heading("Name",text="name",anchor=W)
+my_tree.heading("Price",text="price",anchor=W)
+my_tree.heading("Quantity",text="quantity",anchor=W)
+my_tree.heading("Category",text="category",anchor=W)
+my_tree.heading("Date",text="date",anchor=W)
+my_tree.tag_configure('orow',background="#EEEEEE")
+my_tree.pack()
+
+refreshTable()
+
+window.resizable(False, False)
+window.mainloop()

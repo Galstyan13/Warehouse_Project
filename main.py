@@ -33,7 +33,7 @@ cursor=conn.cursor()
 for i in range(0,5):
     placeholderArray[i] = tkinter.StringVar()
 
-def read()
+def read():
     cursor.connection.ping()
     sql = f"SELECT 'item_id', 'item_id', 'name', 'price', 'quantity', 'category', 'date' FROM 'stocks' ORDER BY 'id' DESC"
     cursor.execute(sql)
@@ -75,7 +75,7 @@ def save():
     if not(itemId and itemId.strip()) or not(name and name.strip()) or not(price and price.strip()) or not(qnt or qnt.strip()) or not(cat and cat.strip()):
         messagebox.showwarning("", "pls fill up all fields")
         return
-    if len(itemId) < 5
+    if len(itemId) < 5:
         messagebox.showwarning("","invalid item id")
         return
     if(not(itemId[3]=='-')):
@@ -122,7 +122,7 @@ def update():
     name=str(nameEntry.get())
     price=str(priceEntry.get())
     qnt= str(qntEntry.get())
-    cat= str(categoryCombo.get)
+    cat= str(categoryCombo.get())
     if not (itemId and itemId.strip()) or not (name and name.strip()) or not (price and price.strip()) or not (qnt or qnt.strip()) or not (cat and cat.strip()):
         messagebox.showwarning("", "pls fill up all fields")
         return
@@ -131,13 +131,13 @@ def update():
         return
     try:
         cursor.connection.ping()
-        sql=f"UPDATER stocks SET `name` = {name}, `price` = {price}, `quantity` = {qnt}, `category` = {cat} WHERE `item_id` = '{itemId}' "
+        sql=f"UPDATE stocks SET `name` = {name}, `price` = {price}, `quantity` = {qnt}, `category` = {cat} WHERE `item_id` = '{itemId}' "
         cursor.execute(sql)
         conn.commit()
         conn.close()
         for num in range(0,5):
             setph('',(num))
-    except Exeption as err:
+    except Exception as err:
         messagebox.showwarning("","error occured ref: " +str(err))
         return
     refreshTable()
@@ -176,7 +176,7 @@ def select():
         setph(name,1)
         setph(price,2)
         setph(qnt,3)
-        setph(cat,4))
+        setph(cat,4)
     except:
         messagebox.showwarning("","please selcet a data row")
 
@@ -185,7 +185,7 @@ def find():
     name = str(nameEntry.get())
     price = str(priceEntry.get())
     qnt = str(qntEntry.get())
-    cat = str(categoryCombo.get)
+    cat = str(categoryCombo.get())
     cursor.connection.ping()
     if(itemId and itemId.strip()):
         sql=f"SELECT 'item_id', `item_id`, `name`, `price`, `quantity`, `category`, `date` FROM stocks WHERE `item_id` LIKE '%{itemId}%' "
@@ -202,7 +202,7 @@ def find():
         return
     cursor.execute(sql)
     try:
-        result= cursor.fetchall();
+        result = cursor.fetchall();
         for num in range(0,5):
             setph(result[0][num],(num))
         conn.commit()
@@ -224,7 +224,7 @@ def exportExcel():
     date = date.replace(':','-')
     dateFinal = date[0:16]
     with open("stocks_"+dateFinal+".csv",'a',newline='') as f:
-        w - csv.writer(f,dialect='excel')
+        w = csv.writer(f,dialect='excel')
         for record in datarow:
             w.writerow(record)
     print("saved: stocks_"+dateFinal+".csv")

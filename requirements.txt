@@ -1,0 +1,3 @@
+tk
+PyMySQL==1.1.0
+numpy==1.26.4
